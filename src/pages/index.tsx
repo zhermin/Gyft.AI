@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import Image from "next/image";
 import Chatbox from "~/components/Chatbox";
 
 const Home: NextPage = () => {
@@ -52,17 +53,32 @@ const Auth: React.FC = () => {
   const { data: sessionData } = useSession();
 
   return (
-    <div className="mt-4 flex flex-col items-center justify-center gap-4">
-      <button
-        className="mt-3 rounded-full bg-white/10 px-10 py-3 text-white no-underline transition hover:bg-white/20"
-        onClick={
-          sessionData ? () => void signOut() : () => void signIn("google")
-        }
-      >
-        {sessionData
-          ? `Sign out from ${sessionData.user?.email as string}`
-          : "Sign in to save your chat history"}
-      </button>
-    </div>
+    <button
+      className="mt-8 flex items-center justify-center gap-4 rounded-full bg-white/10 py-3 pl-4 pr-6 text-white no-underline transition hover:bg-white/20"
+      onClick={sessionData ? () => void signOut() : () => void signIn("google")}
+    >
+      {sessionData && (
+        <>
+          <Image
+            width="100"
+            height="100"
+            src={sessionData?.user?.image as string}
+            alt="User"
+            className="h-8 w-8 rounded-full"
+          />
+        </>
+      )}
+
+      {sessionData ? (
+        <span>
+          Sign Out of{" "}
+          <pre className="ml-0.5 inline">
+            {sessionData.user?.email as string}
+          </pre>
+        </span>
+      ) : (
+        <span className="pl-2">Sign in to save your chat history</span>
+      )}
+    </button>
   );
 };

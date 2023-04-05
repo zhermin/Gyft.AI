@@ -6,6 +6,6 @@ export const chatAPI = new ChatGPTAPI({
     temperature: Number(process.env.TEMPERATURE ?? 0.5),
   },
   debug: true,
-  maxResponseTokens: 500,
+  maxResponseTokens: 1000,
   systemMessage: process.env.SYSTEM_MESSAGE,
 });

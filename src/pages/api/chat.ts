@@ -10,6 +10,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getServerSession(req, res, authOptions);
   try {
     const { message, id } = z
       .object({
@@ -27,7 +28,6 @@ export default async function handler(
     });
     console.log("[COMPLETION RESPONSE]", completion);
 
-    const session = await getServerSession(req, res, authOptions);
     if (session) {
       await prisma.message.create({
         data: {
@@ -50,6 +50,16 @@ export default async function handler(
 
     res.status(200).json({ result: completion.text, id: completion.id });
   } catch (error) {
+    if (session) {
+      await prisma.message.create({
+        data: {
+          userId: session?.user.id,
+          content: "Sorry, there has been an error, please try again later",
+          from: "gyft",
+        },
+      });
+    }
+
     console.error("[FULL ERROR]", error);
     if (error instanceof Error || error instanceof ChatGPTError) {
       console.error(`Error with OpenAI API request: ${error.message}`);

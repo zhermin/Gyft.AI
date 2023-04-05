@@ -1,21 +1,11 @@
-import { ChatGPTAPI, ChatGPTError } from "chatgpt";
+import { ChatGPTError } from "chatgpt";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
+import { chatAPI } from "~/server/chatInstance";
 import { prisma } from "~/server/db";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-
-const api = new ChatGPTAPI({
-  apiKey: process.env.OPENAI_API_KEY ?? "",
-  completionParams: {
-    temperature: 0.5,
-  },
-  debug: true,
-  maxResponseTokens: 500,
-  systemMessage: process.env.SYSTEM_MESSAGE,
-});
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -32,7 +22,7 @@ export default async function handler(
       throw new Error("Message cannot be empty");
     }
 
-    const completion = await api.sendMessage(message, {
+    const completion = await chatAPI.sendMessage(message, {
       parentMessageId: id ? id : undefined,
     });
     console.log("[COMPLETION RESPONSE]", completion);

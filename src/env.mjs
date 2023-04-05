@@ -22,6 +22,7 @@ const server = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   OPENAI_API_KEY: z.string().min(1),
+  TEMPERATURE: z.string(),
   SYSTEM_MESSAGE: z.string().min(1),
 });
 
@@ -48,6 +49,7 @@ const processEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  TEMPERATURE: process.env.TEMPERATURE,
   SYSTEM_MESSAGE: process.env.SYSTEM_MESSAGE,
 };
 

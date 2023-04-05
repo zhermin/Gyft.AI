@@ -2,7 +2,7 @@
 
 ![Gyft.AI Full Logo](/public/logo-full.png)
 
-Gyft.AI is an E2E Gift Service that helps you find the perfect gift for you and your loved ones by chatting naturally with Gyft, your very own personal gifting assistant.
+[Gyft.AI](https://gyft-ai.vercel.app/) is an E2E Gift Service that helps you find the perfect gift for you and your loved ones by chatting naturally with Gyft, your very own personal gifting assistant.
 
 *Note: This is an MVP to showcase the concept of Gyft.AI*
 
@@ -22,3 +22,8 @@ Gifting can thus be stressful and challenging for individuals and corporations a
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 - [ChatGPT](https://platform.openai.com/docs/guides/chat)
+
+## Hosting
+
+- [Vercel](https://vercel.com)
+- [PlanetScale](https://planetscale.com)

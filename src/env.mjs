@@ -24,6 +24,9 @@ const server = z.object({
   OPENAI_API_KEY: z.string().min(1),
   TEMPERATURE: z.string(),
   SYSTEM_MESSAGE: z.string().min(1),
+  CA: z.string().min(1),
+  CLIENT_CERT: z.string().min(1),
+  CLIENT_KEY: z.string().min(1),
 });
 
 /**
@@ -51,6 +54,9 @@ const processEnv = {
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   TEMPERATURE: process.env.TEMPERATURE,
   SYSTEM_MESSAGE: process.env.SYSTEM_MESSAGE,
+  CA: process.env.CA,
+  CLIENT_CERT: process.env.CLIENT_CERT,
+  CLIENT_KEY: process.env.CLIENT_KEY,
 };
 
 // Don't touch the part below

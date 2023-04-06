@@ -3,18 +3,18 @@ import fs from "fs";
 import Keyv from "keyv";
 import path from "path";
 
-export const messageStore = new Keyv(process.env.DATABASE_URLl, {
+export const messageStore = new Keyv(process.env.DATABASE_URL, {
   table: "Message",
   ssl: {
     rejectUnauthorized: false,
     ca: fs
-      .readFileSync(path.join(__dirname, "../../../../certs/ca.pem"))
+      .readFileSync(path.join(process.cwd(), "certs", "ca.pem"))
       .toString(),
     key: fs
-      .readFileSync(path.join(__dirname, "../../../../certs/client-key.pem"))
+      .readFileSync(path.join(process.cwd(), "certs", "client-key.pem"))
       .toString(),
     cert: fs
-      .readFileSync(path.join(__dirname, "../../../../certs/client-cert.pem"))
+      .readFileSync(path.join(process.cwd(), "certs", "client-cert.pem"))
       .toString(),
   },
 });

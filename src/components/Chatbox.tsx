@@ -7,6 +7,10 @@ import { api } from "~/utils/api";
 
 import type { Message } from "@prisma/client";
 
+type ChatMessageDBType = {
+  value: ChatMessage;
+};
+
 export default function Chatbox() {
   const session = useSession();
 
@@ -36,8 +40,8 @@ export default function Chatbox() {
       (message: Message) =>
         ({
           id: message.id,
-          role: message.value?.value?.role,
-          text: message.value?.value?.text,
+          role: (message.value as unknown as ChatMessageDBType).value.role,
+          text: (message.value as unknown as ChatMessageDBType).value.text,
         } as ChatMessage)
     ) ?? []
   );
@@ -49,8 +53,8 @@ export default function Chatbox() {
           (message: Message) =>
             ({
               id: message.id,
-              role: message.value?.value?.role,
-              text: message.value?.value?.text,
+              role: (message.value as unknown as ChatMessageDBType).value.role,
+              text: (message.value as unknown as ChatMessageDBType).value.text,
             } as ChatMessage)
         )
       );

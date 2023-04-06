@@ -21,6 +21,7 @@ specifiers:
   chatgpt: ^5.2.2
   eslint: ^8.36.0
   eslint-config-next: ^13.2.4
+  gyft.ai: 'link:'
   keyv: ^4.5.2
   next: ^13.2.4
   next-auth: 4.20.1
@@ -46,6 +47,7 @@ dependencies:
   '@trpc/react-query': 10.18.0_rcvfzig2xktluz4p7kugxqlbwi
   '@trpc/server': 10.18.0
   chatgpt: 5.2.2
+  gyft.ai: 'link:'
   keyv: 4.5.2
   next: 13.2.4_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.20.1_ld2jel3hspngo3u5lti2kgl2sq

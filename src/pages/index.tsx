@@ -15,7 +15,7 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#15162c] to-[#25A55F] py-16 pb-4">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#15162c] to-[#127c42] py-16 pb-4">
         <div className="container flex flex-col items-center justify-center gap-6 px-4">
           <div className="flex flex-col items-center justify-center">
             <svg
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
               <path d="M7 9H1V12.5C1 13.8807 2.11929 15 3.5 15H7V9Z" />
               <path d="M8 15H11.5C12.8807 15 14 13.8807 14 12.5V9H8V15Z" />
             </svg>
-            <h1 className="bg-gradient-to-r from-green-200 to-green-600 bg-clip-text p-5 text-5xl font-extrabold tracking-tight text-transparent sm:text-[5rem]">
+            <h1 className="bg-gradient-to-r from-green-200 to-green-500 bg-clip-text p-5 text-5xl font-extrabold tracking-tight text-transparent sm:text-[5rem]">
               Gyft.AI
             </h1>
             <h3 className="font-bold text-green-200 sm:text-lg">

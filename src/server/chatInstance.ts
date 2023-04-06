@@ -2,9 +2,13 @@ import { ChatGPTAPI } from "chatgpt";
 // import fs from "fs";
 import Keyv from "keyv";
 
+import KeyvMysql from "@keyv/mysql";
+
 // import path from "path";
 
-export const messageStore = new Keyv(process.env.DATABASE_URL, {
+const store = new KeyvMysql(process.env.DATABASE_URL);
+export const messageStore = new Keyv({
+  store,
   table: "Message",
   // ssl: {
   //   rejectUnauthorized: false,

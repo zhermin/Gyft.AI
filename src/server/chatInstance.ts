@@ -3,12 +3,15 @@ import Keyv from "keyv";
 
 import KeyvMysql from "@keyv/mysql";
 
+console.log(process.env.CA);
+console.log(process.env.CLIENT_CERT);
+console.log(process.env.CLIENT_KEY);
+
 const store = new KeyvMysql(process.env.DATABASE_URL);
 export const messageStore = new Keyv({
   store,
   table: "Message",
   ssl: {
-    rejectUnauthorized: false,
     ca: process.env.CA,
     cert: process.env.CLIENT_CERT,
     key: process.env.CLIENT_KEY,

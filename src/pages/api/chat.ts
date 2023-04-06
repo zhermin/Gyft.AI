@@ -31,7 +31,9 @@ export default async function handler(
     if (session && completion) {
       await prisma.message.update({
         where: {
-          id: `keyv:${completion.parentMessageId}`,
+          id: completion.parentMessageId
+            ? `keyv:${completion.parentMessageId}`
+            : undefined,
         },
         data: {
           userId: session.user.id,

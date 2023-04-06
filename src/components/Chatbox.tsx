@@ -1,4 +1,4 @@
-import { ChatMessage } from "chatgpt";
+import type { ChatMessage } from "chatgpt";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -36,8 +36,8 @@ export default function Chatbox() {
       (message: Message) =>
         ({
           id: message.id,
-          role: message.value.value.role,
-          text: message.value.value.text,
+          role: message.value?.value?.role,
+          text: message.value?.value?.text,
         } as ChatMessage)
     ) ?? []
   );
@@ -49,8 +49,8 @@ export default function Chatbox() {
           (message: Message) =>
             ({
               id: message.id,
-              role: message.value.value.role,
-              text: message.value.value.text,
+              role: message.value?.value?.role,
+              text: message.value?.value?.text,
             } as ChatMessage)
         )
       );

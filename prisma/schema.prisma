@@ -65,11 +65,13 @@ model VerificationToken {
 }
 
 model Message {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    value     Json
-    userId    String?
-    user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id              String   @id @default(cuid())
+    createdAt       DateTime @default(now())
+    from            String
+    parentMessageId String?
+    content         String   @db.Text
+    userId          String
+    user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([userId])
 }

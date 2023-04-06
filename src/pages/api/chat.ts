@@ -28,41 +28,34 @@ export default async function handler(
     });
     console.log("[COMPLETION RESPONSE]", completion);
 
-    if (session && completion) {
-      await prisma.message.update({
-        where: {
-          id: completion.parentMessageId
-            ? `keyv:${completion.parentMessageId}`
-            : undefined,
-        },
+    if (session) {
+      await prisma.message.create({
         data: {
           userId: session.user.id,
-          createdAt: new Date(),
+          content: message,
+          from: "user",
+          parentMessageId: completion.id,
         },
       });
 
-      await prisma.message.update({
-        where: {
-          id: `keyv:${completion.id}`,
-        },
+      await prisma.message.create({
         data: {
           userId: session.user.id,
-          createdAt: new Date(Date.now() + 1000),
+          content: completion.text,
+          from: "gyft",
+          parentMessageId: completion.id,
         },
       });
     }
 
-    res.status(200).json(completion);
+    res.status(200).json({ result: completion.text, id: completion.id });
   } catch (error) {
     if (session) {
       await prisma.message.create({
         data: {
           userId: session?.user.id,
-          value: {
-            role: "assistant",
-            id: "error",
-            text: "Sorry, there has been an error, please try again later",
-          },
+          content: "Sorry, there has been an error, please try again later",
+          from: "gyft",
         },
       });
     }

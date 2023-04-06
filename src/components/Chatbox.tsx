@@ -1,4 +1,3 @@
-import type { ChatMessage } from "chatgpt";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -7,8 +6,14 @@ import { api } from "~/utils/api";
 
 import type { Message } from "@prisma/client";
 
-type ChatMessageDBType = {
-  value: ChatMessage;
+type MessageType = {
+  from: "gyft" | "user";
+  message: string;
+};
+
+type ChatResponseType = {
+  result: string;
+  id: string;
 };
 
 export default function Chatbox() {
@@ -29,20 +34,19 @@ export default function Chatbox() {
   const [message, setMessage] = useState("");
   const [id, setId] = useState<string>();
 
-  const welcomeMessage: ChatMessage = {
-    id: "welcome",
-    role: "assistant",
-    text: "Hi, I'm Gyft! I'm here to help you find the perfect gift for you or your loved ones. What's the occasion?",
+  const welcomeMessage: MessageType = {
+    from: "gyft",
+    message:
+      "Hi, I'm Gyft! I'm here to help you find the perfect gift for you or your loved ones. What's the occasion?",
   };
 
-  const [messages, setMessages] = useState<ChatMessage[]>(
+  const [messages, setMessages] = useState<MessageType[]>(
     chatHistory?.map(
       (message: Message) =>
         ({
-          id: message.id,
-          role: (message.value as unknown as ChatMessageDBType).value.role,
-          text: (message.value as unknown as ChatMessageDBType).value.text,
-        } as ChatMessage)
+          from: message.from,
+          message: message.content,
+        } as MessageType)
     ) ?? []
   );
 
@@ -52,17 +56,12 @@ export default function Chatbox() {
         chatHistory.map(
           (message: Message) =>
             ({
-              id: message.id,
-              role: (message.value as unknown as ChatMessageDBType).value.role,
-              text: (message.value as unknown as ChatMessageDBType).value.text,
-            } as ChatMessage)
+              from: message.from,
+              message: message.content,
+            } as MessageType)
         )
       );
       setId(chatHistory[chatHistory.length - 1]?.id);
-      console.log("[LAST LOGIN ID]", chatHistory[chatHistory.length - 1]?.id);
-    } else {
-      setMessages([]);
-      setId(undefined);
     }
   }, [chatHistory]);
 
@@ -79,7 +78,7 @@ export default function Chatbox() {
       }
       setMessages((messages) => [
         ...messages,
-        { id: messages.length.toString(), role: "user", text: message.trim() },
+        { from: "user", message: message.trim() },
       ]);
       setMessage("");
 
@@ -92,11 +91,11 @@ export default function Chatbox() {
       });
       console.log(resonse);
       if (!resonse.ok) throw new Error(resonse.statusText);
-      const data = (await resonse.json()) as ChatMessage;
+      const data = (await resonse.json()) as ChatResponseType;
 
       setMessages((messages) => [
         ...messages,
-        { id: data.id, role: "assistant", text: data.text },
+        { from: "gyft", message: data.result },
       ]);
       setId(data.id);
       setLoading(false);
@@ -104,10 +103,10 @@ export default function Chatbox() {
       console.error(error);
       setMessages([
         ...messages,
+        { from: "user", message },
         {
-          id: messages.length.toString(),
-          role: "assistant",
-          text: "Sorry, there has been an error, please try again later",
+          from: "gyft",
+          message: "Sorry, there has been an error, please try again later",
         },
       ]);
       setMessage("");
@@ -121,15 +120,15 @@ export default function Chatbox() {
         id="messages"
         className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch flex flex-col space-y-4 overflow-y-auto sm:p-3"
       >
-        {[welcomeMessage, ...messages].map((message) =>
-          message.role === "user" ? (
+        {[welcomeMessage, ...messages].map((message, index) =>
+          message.from === "user" ? (
             <div
               className="flex items-end justify-end selection:bg-green-100 selection:text-black"
-              key={message.id}
+              key={index}
             >
               <div className="order-1 mx-2 flex max-w-sm flex-col items-end space-y-3">
                 <ReactMarkdown className="prose prose-sm inline-block rounded-lg rounded-br-none bg-teal-500 px-4 py-2 text-white">
-                  {message.text}
+                  {message.message}
                 </ReactMarkdown>
               </div>
               <Image
@@ -140,11 +139,11 @@ export default function Chatbox() {
                 className="order-2 h-8 w-8 rounded-full border-2 border-green-100"
               />
             </div>
-          ) : message.role === "assistant" ? (
-            <div className="flex items-end" key={message.id}>
+          ) : message.from === "gyft" ? (
+            <div className="flex items-end" key={index}>
               <div className="order-2 mx-2 flex max-w-sm flex-col items-start space-y-3 selection:bg-green-800 selection:text-white sm:max-w-full">
                 <ReactMarkdown className="prose prose-sm inline-block rounded-lg rounded-bl-none bg-gray-50 px-4 py-2 text-gray-600">
-                  {message.text}
+                  {message.message}
                 </ReactMarkdown>
               </div>
               <Image

@@ -1,3 +1,4 @@
+import { ChatMessage } from "chatgpt";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -6,57 +7,60 @@ import { api } from "~/utils/api";
 
 import type { Message } from "@prisma/client";
 
-type MessageType = {
-  from: "gyft" | "user";
-  message: string;
-};
-
-type ChatResponseType = {
-  result: string;
-  id: string;
-};
-
 export default function Chatbox() {
   const session = useSession();
+
   const { data: chatHistory } = api.chat.getChatHistory.useQuery(undefined, {
     enabled: session?.data?.user !== undefined,
   });
-  const mutation = api.chat.clearChatHistory.useMutation();
+  const mutation = api.chat.clearChatHistory.useMutation({
+    onSuccess: () => {
+      setMessages([]);
+      setMessage("");
+      setId(undefined);
+    },
+  });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [id, setId] = useState<string>();
 
+  const welcomeMessage: ChatMessage = {
+    id: "welcome",
+    role: "assistant",
+    text: "Hi, I'm Gyft! I'm here to help you find the perfect gift for you or your loved ones. What's the occasion?",
+  };
+
+  const [messages, setMessages] = useState<ChatMessage[]>(
+    chatHistory?.map(
+      (message: Message) =>
+        ({
+          id: message.id,
+          role: message.value.value.role,
+          text: message.value.value.text,
+        } as ChatMessage)
+    ) ?? []
+  );
+
   useEffect(() => {
-    if (chatHistory?.length) {
+    if (chatHistory) {
       setMessages(
         chatHistory.map(
           (message: Message) =>
             ({
-              from: message.from,
-              message: message.content,
-            } as MessageType)
+              id: message.id,
+              role: message.value.value.role,
+              text: message.value.value.text,
+            } as ChatMessage)
         )
       );
       setId(chatHistory[chatHistory.length - 1]?.id);
+      console.log("[LAST LOGIN ID]", chatHistory[chatHistory.length - 1]?.id);
+    } else {
+      setMessages([]);
+      setId(undefined);
     }
   }, [chatHistory]);
-
-  const welcomeMessage: MessageType = {
-    from: "gyft",
-    message:
-      "Hi, I'm Gyft! I'm here to help you find the perfect gift for you or your loved ones. What's the occasion?",
-  };
-
-  const [messages, setMessages] = useState<MessageType[]>(
-    chatHistory?.map(
-      (message: Message) =>
-        ({
-          from: message.from,
-          message: message.content,
-        } as MessageType)
-    ) ?? []
-  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -71,7 +75,7 @@ export default function Chatbox() {
       }
       setMessages((messages) => [
         ...messages,
-        { from: "user", message: message.trim() },
+        { id: messages.length.toString(), role: "user", text: message.trim() },
       ]);
       setMessage("");
 
@@ -84,11 +88,11 @@ export default function Chatbox() {
       });
       console.log(resonse);
       if (!resonse.ok) throw new Error(resonse.statusText);
-      const data = (await resonse.json()) as ChatResponseType;
+      const data = (await resonse.json()) as ChatMessage;
 
       setMessages((messages) => [
         ...messages,
-        { from: "gyft", message: data.result },
+        { id: data.id, role: "assistant", text: data.text },
       ]);
       setId(data.id);
       setLoading(false);
@@ -96,10 +100,10 @@ export default function Chatbox() {
       console.error(error);
       setMessages([
         ...messages,
-        { from: "user", message },
         {
-          from: "gyft",
-          message: "Sorry, there has been an error, please try again later",
+          id: messages.length.toString(),
+          role: "assistant",
+          text: "Sorry, there has been an error, please try again later",
         },
       ]);
       setMessage("");
@@ -113,12 +117,15 @@ export default function Chatbox() {
         id="messages"
         className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch flex flex-col space-y-4 overflow-y-auto sm:p-3"
       >
-        {[welcomeMessage, ...messages].map((message, index) =>
-          message.from === "user" ? (
-            <div className="flex items-end justify-end" key={index}>
+        {[welcomeMessage, ...messages].map((message) =>
+          message.role === "user" ? (
+            <div
+              className="flex items-end justify-end selection:bg-green-100 selection:text-black"
+              key={message.id}
+            >
               <div className="order-1 mx-2 flex max-w-sm flex-col items-end space-y-3">
-                <ReactMarkdown className="prose prose-sm inline-block rounded-lg rounded-br-none bg-teal-500 px-4 py-2 text-white ">
-                  {message.message}
+                <ReactMarkdown className="prose prose-sm inline-block rounded-lg rounded-br-none bg-teal-500 px-4 py-2 text-white">
+                  {message.text}
                 </ReactMarkdown>
               </div>
               <Image
@@ -129,11 +136,11 @@ export default function Chatbox() {
                 className="order-2 h-8 w-8 rounded-full border-2 border-green-100"
               />
             </div>
-          ) : (
-            <div className="flex items-end" key={index}>
-              <div className="order-2 mx-2 flex max-w-sm flex-col items-start space-y-3 sm:max-w-full">
+          ) : message.role === "assistant" ? (
+            <div className="flex items-end" key={message.id}>
+              <div className="order-2 mx-2 flex max-w-sm flex-col items-start space-y-3 selection:bg-green-800 selection:text-white sm:max-w-full">
                 <ReactMarkdown className="prose prose-sm inline-block rounded-lg rounded-bl-none bg-gray-50 px-4 py-2 text-gray-600">
-                  {message.message}
+                  {message.text}
                 </ReactMarkdown>
               </div>
               <Image
@@ -144,7 +151,7 @@ export default function Chatbox() {
                 className="order-1 h-8 w-8 rounded-full border-2 border-green-100"
               />
             </div>
-          )
+          ) : null
         )}
 
         {loading && (
@@ -210,13 +217,13 @@ export default function Chatbox() {
               placeholder={
                 !loading ? "Hey Gyft, what should I get for..." : "Loading..."
               }
-              className="w-full rounded-md bg-gray-50 py-3 pl-4 pr-10 text-sm text-gray-600 placeholder-gray-400 focus:placeholder-gray-500 focus:outline-none disabled:opacity-80"
+              className="w-full rounded-md bg-gray-50 py-3 pl-4 pr-10 text-sm text-gray-600 placeholder-gray-400 selection:bg-green-800 selection:text-white focus:placeholder-gray-500 focus:outline-none disabled:opacity-80"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={loading}
             />
             <div className="absolute inset-y-1/3 right-0 items-center">
-              <button type="submit" className="px-3">
+              <button type="submit" className="mx-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"

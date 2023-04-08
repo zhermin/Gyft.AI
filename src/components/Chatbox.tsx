@@ -61,7 +61,7 @@ export default function Chatbox() {
             } as MessageType)
         )
       );
-      setId(chatHistory[chatHistory.length - 1]?.id);
+      setId(chatHistory[chatHistory.length - 1]?.parentMessageId ?? undefined);
     }
   }, [chatHistory]);
 
@@ -224,6 +224,7 @@ export default function Chatbox() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={loading}
+              maxLength={300}
             />
             <div className="absolute inset-y-1/3 right-0 items-center">
               <button type="submit" className="mx-3">

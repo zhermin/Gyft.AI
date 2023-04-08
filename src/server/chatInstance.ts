@@ -10,7 +10,6 @@ if (!process.env.REDIS_URL || !process.env.OPENAI_API_KEY) {
 const store = new KeyvRedis(process.env.REDIS_URL);
 export const messageStore = new Keyv({
   store,
-  lazyConnect: true,
 });
 messageStore.on("error", (err) => console.error("[Keyv Error]", err));
 

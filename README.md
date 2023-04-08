@@ -4,7 +4,7 @@
 
 [Gyft.AI](https://gyft-ai.vercel.app/) is an E2E Gift Service that helps you find the perfect gift for you and your loved ones by chatting naturally with Gyft, your very own personal gifting assistant.
 
-*Note: This is an MVP to showcase the concept of Gyft.AI*
+*Note: This is an MVP to showcase the concept of Gyft.AI, product recommendations might not exist*
 
 ## Problem Statement
 
@@ -27,3 +27,4 @@ Gifting can thus be stressful and challenging for individuals and corporations a
 
 - [Vercel](https://vercel.com)
 - [PlanetScale](https://planetscale.com)
+- [Upstash](https://upstash.com)

@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { api } from "~/utils/api";
 
@@ -64,6 +64,12 @@ export default function Chatbox() {
       setId(chatHistory[chatHistory.length - 1]?.parentMessageId ?? undefined);
     }
   }, [chatHistory]);
+
+  const messagesEndRef = useRef(null as null | HTMLDivElement);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(scrollToBottom, [messages]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -240,6 +246,7 @@ export default function Chatbox() {
           </form>
         </div>
       </div>
+      <div ref={messagesEndRef} />
     </div>
   );
 }

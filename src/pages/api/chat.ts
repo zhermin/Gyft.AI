@@ -2,10 +2,11 @@ import { ChatGPTError } from "chatgpt";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
-import { chatAPI, messageStore } from "~/server/chatInstance";
+import { chatAPI } from "~/server/chatInstance";
 import { prisma } from "~/server/db";
 
 import type { NextApiRequest, NextApiResponse } from "next";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -87,11 +88,4 @@ export default async function handler(
       },
     });
   }
-
-  await new Promise<void>((resolve) =>
-    setTimeout(() => {
-      messageStore.disconnect();
-      resolve();
-    }, 1000)
-  );
 }
